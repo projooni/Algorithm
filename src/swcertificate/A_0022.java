@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -20,16 +21,15 @@ public class A_0022 {
 	public static final int KEY_CNT = 36;
 	public static int firstKeyNum;
 	public static int lastKeyNum;
-	public static int numMinCnt;
-	public static int uppMinCnt;
 	public static List<Integer> adjList[];
+	public static int keyCnt[];
 	public static int dp[][];
 	public static int result;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
 		
-		System.setIn(new FileInputStream("C://eclipse-workspace/sample_input.txt"));
+		System.setIn(new FileInputStream("D://sample_input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
@@ -51,11 +51,14 @@ public class A_0022 {
 			
 			firstKeyNum = (day + second) % 36;
 			lastKeyNum = (month + hour + minute) % 36;
-			numMinCnt = minute / 10;
-			uppMinCnt = second / 10;
+			int numMinCnt = minute / 10;
+			int uppMinCnt = second / 10;
 			
 			adjList = new ArrayList[KEY_CNT];
 			makeAdjList();
+			
+			keyCnt = new int[KEY_CNT];
+			Arrays.fill(keyCnt, 2);
 			
 			dp = new int[KEY_CNT][9];
 			for(int i=0; i<KEY_CNT; i++) {
@@ -63,60 +66,94 @@ public class A_0022 {
 					dp[i][j] = -1;
 				}
 			}
-			result = getPossiblePasswordCount(firstKeyNum, 8);
 			
-			bw.write("#" + testCase + result);
+			if(firstKeyNum >= 0 && firstKeyNum < 10) {
+				numMinCnt--;
+			}
+			if(lastKeyNum >= 10 && firstKeyNum < KEY_CNT) {
+				uppMinCnt--;
+			}
+			result = getPossiblePasswordCount(firstKeyNum, 8, numMinCnt, uppMinCnt);
+			
+			bw.flush();
+			bw.write("#" + testCase + " " + result + "\n");
 			
 		}
+		bw.close();
 
 	}
 	
-	public static int getPossiblePasswordCount(int keyIdx, int remainingCharCnt){
+	public static int getPossiblePasswordCount(int keyIdx, int remainingCharCnt, int numMinCnt, int uppMinCnt){
 		
-		if(remainingCharCnt <= 0){
-			return 1;
+		boolean isUppercase = keyIdx < 0 ? true : false;
+		if(isUppercase) {
+			keyIdx *= -1;
 		}
+		
+		// ³²Àº ÀÚ¸®¼ö°¡ ¾ø°í, ÃÖ¼Ò Æ÷ÇÔµÇ¾î¾ßÇÒ °³¼ö ÀÌ»ó ¼ýÀÚ°¡ Æ÷ÇÔµÇ¸ç, ´ë¹®ÀÚ°¡ Æ÷ÇÔµÇ¾î¾ß ÇÒ °³¼ö¸¸Å­ ÀÖÀ»¶§ 1À» ¸®ÅÏ. ³ª¸ÓÁö´Â 0¸®ÅÏ
+		if(remainingCharCnt <= 0){
+			if(keyIdx == lastKeyNum) {
+				if(numMinCnt <= 0 && uppMinCnt == 0) {
+					return 1;
+				}else {
+					return 0;
+				}
+			}else {
+				return 0;
+			}
+		}
+		
+		// ÇöÀç Å°ÀÇ Ä«¿îÆ®°¡ 2¹ø(´ë¹®ÀÚ/¼Ò¹®ÀÚ) ¸ðµÎ ¼ÒÁøµÈ °æ¿ì ´õÀÌ»ó ÀÔ·ÂÇÒ ¼ö ¾øÀ¸¹Ç·Î 0¸®ÅÏ.
+		if(keyCnt[keyIdx] <= 0) {
+			return 0;
+		}
+		
+		// Å° Ä«¿îÆ®¸¦ ¼ÒÁø½ÃÅ²´Ù
+		keyCnt[keyIdx]--;
 		
 		int ret = 0;
 		
-		// í˜„ìž¬ Keyì— ì¸ì ‘í•œ Key list
+		// ÇöÀç Å°ÀÇ ÀÎÁ¢ Å° ¸®½ºÆ®
 		List<Integer> adjListOfCurrKey = adjList[keyIdx];
 		
 		for(int idx=0; idx<adjListOfCurrKey.size(); idx++){
 			
-			if(remainingCharCnt == 1){
-				// ë§ˆì§€ë§‰ 10ë²ˆì§¸ ìž…ë ¥ í‚¤ì— ëŒ€í•œ ì¸ì ‘ í‚¤ ë¦¬ìŠ¤íŠ¸
-				List<Integer> adjListOfLastKey = adjList[lastKeyNum];
-				boolean isAdjLastKey = false;
-				for(int j=0; j<adjListOfLastKey.size(); j++){
-					if(idx == adjListOfLastKey.get(j)){
-						isAdjLastKey = true;
-						break;
-					}
-				}
-				if(!isAdjLastKey){
-					continue;
-				}
-			}
-			
-			// ï¿½ì½ï¿½ì˜± idxï¿½ë¿‰ ï¿½ï¿½ï¿½ë¸³ ï¿½ì”¤ï¿½ì ’ key è¸°ëŠìƒ‡
 			int adjKeyNum = adjListOfCurrKey.get(idx);
 			
-			if(adjKeyNum < 10){
-				// ï¿½ë‹½ï¿½ì˜„ï¿½ì”¤åª›ï¿½?
-				numMinCnt--;
-			}else{
-				// è‡¾ëª„ì˜„ï¿½ì”¤åª›ï¿½?
-				uppMinCnt--;
-			}
+			// ³²Àº ºñ¹Ð¹øÈ£°¡ 1°³ÀÏ¶§, ¸¶Áö¸· ºñ¹Ð¹øÈ£ÀÇ ÀÎÁ¢ Å° ¿©ºÎ¸¦ °Ë»çÇÑ´Ù. 
+//			if(remainingCharCnt == 1){
+//				List<Integer> adjListOfLastKey = adjList[lastKeyNum];
+//				boolean isAdjLastKey = false;
+//				for(int j=0; j<adjListOfLastKey.size(); j++){
+//					if(adjKeyNum == adjListOfLastKey.get(j)){
+//						isAdjLastKey = true;
+//						break;
+//					}
+//				}
+//				if(!isAdjLastKey){
+//					continue;
+//				}
+//			}
 			
-			if(dp[adjKeyNum][remainingCharCnt] == -1){
-				dp[adjKeyNum][remainingCharCnt] = getPossiblePasswordCount(idx, remainingCharCnt-1);
-			}
+			// dp¿¡ ¾øÀ¸¸é Àç±Í¸¦ Åº´Ù.
+//			if(dp[adjKeyNum][remainingCharCnt] == -1){
+//				dp[adjKeyNum][remainingCharCnt] = getPossiblePasswordCount(
+//						adjKeyNum,
+//						remainingCharCnt-1,
+//						(adjKeyNum < 10 ? (numMinCnt -1) : numMinCnt),
+//						(adjKeyNum >= 10 ? (uppMinCnt -1) : uppMinCnt));
+//			}
 			
-			ret += dp[adjKeyNum][remainingCharCnt];
+//			ret += dp[adjKeyNum][remainingCharCnt];
+			ret += getPossiblePasswordCount(
+					adjKeyNum,
+					remainingCharCnt-1,
+					(adjKeyNum < 10 ? (numMinCnt -1) : numMinCnt),
+					(isUppercase ? (uppMinCnt -1) : uppMinCnt));
 			
 		}
+		
+		keyCnt[keyIdx]++;
 		
 		return ret;
 		
@@ -140,98 +177,131 @@ public class A_0022 {
 			
 			if(i < 10){
 				
-				if(isInKeyboardExcLine(i-10, lineType)){
-					adjList[i].add(i-10);
-				}
-				if(isInKeyboardExcLine(i-9, lineType)){
-					adjList[i].add(i-9);
-				}
-				
-				if(isInKeyboardExcLine(i+9, lineType)){
+				if(isInKeyboardExcLine(i+9, lineType, false)){
 					adjList[i].add(i+9);
+					adjList[i].add((i+9)*-1);
 				}
-				if(isInKeyboardExcLine(i+10, lineType)){
+				if(isInKeyboardExcLine(i+10, lineType, false)){
 					adjList[i].add(i+10);
+					adjList[i].add((i+10)*-1);
 				}
 				
 			}else if(i >= 10 && i < 20){
 				
-				if(isInKeyboardExcLine(i-10, lineType)){
+				if(isInKeyboardExcLine(i-10, lineType, false)){
 					adjList[i].add(i-10);
 				}
-				if(isInKeyboardExcLine(i-9, lineType)){
+				if(isInKeyboardExcLine(i-9, lineType, false)){
 					adjList[i].add(i-9);
 				}
 				
-				if(isInKeyboardExcLine(i+9, lineType)){
+				if(isInKeyboardExcLine(i+9, lineType, false)){
 					adjList[i].add(i+9);
+					adjList[i].add((i+9)*-1);
 				}
-				if(isInKeyboardExcLine(i+10, lineType)){
+				if(isInKeyboardExcLine(i+10, lineType, false)){
 					adjList[i].add(i+10);
+					adjList[i].add((i+10)*-1);
 				}
 				
-			} if(i >= 20 && i < 29){
+			}else if(i >= 20 && i < 29){
 				
-				if(isInKeyboardExcLine(i-10, lineType)){
+				if(isInKeyboardExcLine(i-10, lineType, false)){
 					adjList[i].add(i-10);
+					adjList[i].add((i-10)*-1);
 				}
-				if(isInKeyboardExcLine(i-9, lineType)){
+				if(isInKeyboardExcLine(i-9, lineType, false)){
 					adjList[i].add(i-9);
+					adjList[i].add((i-9)*-1);
 				}
 				
-				if(isInKeyboardExcLine(i+8, lineType)){
+				if(isInKeyboardExcLine(i+8, lineType, false)){
 					adjList[i].add(i+8);
+					adjList[i].add((i+8)*-1);
 				}
-				if(isInKeyboardExcLine(i+9, lineType)){
+				if(isInKeyboardExcLine(i+9, lineType, false)){
 					adjList[i].add(i+9);
+					adjList[i].add((i+9)*-1);
 				}
 				
 			}else{ // keyIdx >= 29
 				
-				if(isInKeyboardExcLine(i-9, lineType)){
+				if(isInKeyboardExcLine(i-9, lineType, false)){
 					adjList[i].add(i-9);
+					adjList[i].add((i-9)*-1);
 				}
-				if(isInKeyboardExcLine(i-8, lineType)){
+				if(isInKeyboardExcLine(i-8, lineType, false)){
 					adjList[i].add(i-8);
+					adjList[i].add((i-8)*-1);
 				}
 				
 			}
 			
-			lineType = 0;
-			
-			if(isInKeyboardExcLine(i-1, lineType)){
+			if(isInKeyboardExcLine(i-1, lineType, true)){
 				adjList[i].add(i-1);
+				if(i >= 10) {
+					adjList[i].add((i-1)*-1);
+				}
 			}
-			if(isInKeyboardExcLine(i+1, lineType)){
+			if(isInKeyboardExcLine(i+1, lineType, true)){
 				adjList[i].add(i+1);
+				if(i >= 10) {
+					adjList[i].add((i+1)*-1);
+				}
 			}
 			
-			adjList[i].add(i-9);
 		}
 		
 		
 	}
 	
-	// í˜„ìž¬ keyê°€ ì†í•œ ë¼ì¸ì´ ì•„ë‹ˆë©´ì„œ í‚¤ ë°°ì—´ë‚´ì— ìžˆëŠ”ì§€ ì—¬ë¶€ë¥¼ ë¦¬í„´í•œë‹¤
-	public static boolean isInKeyboardExcLine(int num, int lineType){
+	public static boolean isInKeyboardExcLine(int num, int lineType, boolean isOkSameLine){
 		boolean ret = false;
 		if(num >= 0 && num <= 35){
 			if(lineType == 1) {
-				if(num >= 10) {
-					ret = true;
+				if(isOkSameLine){
+					if(num >= 0 && num < 10) {
+						ret = true;
+					}
+				}else {
+					if(num >= 10 && num < 20) {
+						ret = true;
+					}
 				}
+				
 			}else if(lineType == 2) {
-				if(num < 10 || num >= 20) {
-					ret = true;
+				if(isOkSameLine){
+					if(num >= 10 && num < 20) {
+						ret = true;
+					}
+				}else {
+					if(num < 10 || (num >= 20 && num < 29)) {
+						ret = true;
+					}
 				}
+				
 			}else if(lineType == 3) {
-				if(num < 20 || num >= 29) {
-					ret = true;
+				if(isOkSameLine){
+					if(num >= 20 && num < 29) {
+						ret = true;
+					}
+				}else {
+					if(num < 20 || num >= 29) {
+						ret = true;
+					}
 				}
+				
 			}else if(lineType == 4){
-				if(num < 29) {
-					ret = true;
+				if(isOkSameLine) {
+					if(num >= 29 && num < 36) {
+						ret = true;
+					}
+				}else {
+					if(num < 29) {
+						ret = true;
+					}
 				}
+				
 			}else {
 				ret = true;
 			}
