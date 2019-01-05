@@ -25,17 +25,19 @@ public class A_0022 {
 	public static int keyCnt[];
 	public static int dp[][];
 	public static int result;
+	public static int password[];
+	public static int visited[][];
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
 		
-		System.setIn(new FileInputStream("D://sample_input.txt"));
+		System.setIn(new FileInputStream("C://eclipse-workspace/sample_input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
 		int T = Integer.parseInt(br.readLine().trim());
 		
-		for(int testCase=1; testCase < T; testCase++){
+		for(int testCase=1; testCase <= T; testCase++){
 			
 			StringTokenizer st = new StringTokenizer(br.readLine());
 			String date = st.nextToken();
@@ -73,7 +75,19 @@ public class A_0022 {
 			if(lastKeyNum >= 10 && firstKeyNum < KEY_CNT) {
 				uppMinCnt--;
 			}
-			result = getPossiblePasswordCount(firstKeyNum, 8, numMinCnt, uppMinCnt);
+			
+			
+			password = new int[10];
+			Arrays.fill(password, -1);
+			result = 0;
+			// ì²«ë¬¸ìžê°€ ì†Œë¬¸ìžì´ê±°ë‚˜ ìˆ«ìžì¼ ê²½ìš°
+			visited = new int[2][KEY_CNT];
+			result += getPossiblePasswordCount(firstKeyNum, 10, numMinCnt, uppMinCnt);
+			// ì²«ë¬¸ìžê°€ ëŒ€ë¬¸ìžì¼ ê²½ìš°
+			if(firstKeyNum >= 10) {
+				visited = new int[2][KEY_CNT];
+				result += getPossiblePasswordCount((firstKeyNum*-1), 10, numMinCnt, uppMinCnt);
+			}
 			
 			bw.flush();
 			bw.write("#" + testCase + " " + result + "\n");
@@ -85,42 +99,51 @@ public class A_0022 {
 	
 	public static int getPossiblePasswordCount(int keyIdx, int remainingCharCnt, int numMinCnt, int uppMinCnt){
 		
+		System.out.println(keyIdx);
+		
 		boolean isUppercase = keyIdx < 0 ? true : false;
 		if(isUppercase) {
 			keyIdx *= -1;
 		}
 		
-		// ³²Àº ÀÚ¸®¼ö°¡ ¾ø°í, ÃÖ¼Ò Æ÷ÇÔµÇ¾î¾ßÇÒ °³¼ö ÀÌ»ó ¼ýÀÚ°¡ Æ÷ÇÔµÇ¸ç, ´ë¹®ÀÚ°¡ Æ÷ÇÔµÇ¾î¾ß ÇÒ °³¼ö¸¸Å­ ÀÖÀ»¶§ 1À» ¸®ÅÏ. ³ª¸ÓÁö´Â 0¸®ÅÏ
-		if(remainingCharCnt <= 0){
+		visited[isUppercase ? 1 : 0][keyIdx]++;
+		
+		// ë‚¨ì€ ìžë¦¿ìˆ˜ê°€ 0ì´ê³ , ë§ˆì§€ë§‰ í‚¤ì— ë„ë‹¬í–ˆìœ¼ë©°, ìµœì†Œ ìˆ«ìž ì¹´ìš´íŠ¸ë¥¼ ë‹¬ì„±í•˜ê³ , ëŒ€ë¬¸ìž ì¹´ìš´íŠ¸ë¥¼ ë‹¬ì„±í•œê²½ìš°
+		if(remainingCharCnt <= 1){
 			if(keyIdx == lastKeyNum) {
 				if(numMinCnt <= 0 && uppMinCnt == 0) {
 					return 1;
 				}else {
+					System.out.println("fail");
 					return 0;
 				}
 			}else {
+				System.out.println("fail");
 				return 0;
 			}
 		}
 		
-		// ÇöÀç Å°ÀÇ Ä«¿îÆ®°¡ 2¹ø(´ë¹®ÀÚ/¼Ò¹®ÀÚ) ¸ðµÎ ¼ÒÁøµÈ °æ¿ì ´õÀÌ»ó ÀÔ·ÂÇÒ ¼ö ¾øÀ¸¹Ç·Î 0¸®ÅÏ.
-		if(keyCnt[keyIdx] <= 0) {
-			return 0;
-		}
+		password[10-remainingCharCnt] = keyIdx;
 		
-		// Å° Ä«¿îÆ®¸¦ ¼ÒÁø½ÃÅ²´Ù
-		keyCnt[keyIdx]--;
+		// ï¿½ï¿½ï¿½ï¿½ Å°ï¿½ï¿½ Ä«ï¿½ï¿½Æ®ï¿½ï¿½ 2ï¿½ï¿½(ï¿½ë¹®ï¿½ï¿½/ï¿½Ò¹ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì»ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ 0ï¿½ï¿½ï¿½ï¿½.
+//		if(keyCnt[keyIdx] <= 0) {
+//			return 0;
+//		}
+		
+		// Å° Ä«ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½
+//		keyCnt[keyIdx]--;
 		
 		int ret = 0;
 		
-		// ÇöÀç Å°ÀÇ ÀÎÁ¢ Å° ¸®½ºÆ®
+		// ï¿½ï¿½ï¿½ï¿½ Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å° ï¿½ï¿½ï¿½ï¿½Æ®
 		List<Integer> adjListOfCurrKey = adjList[keyIdx];
 		
 		for(int idx=0; idx<adjListOfCurrKey.size(); idx++){
 			
 			int adjKeyNum = adjListOfCurrKey.get(idx);
 			
-			// ³²Àº ºñ¹Ð¹øÈ£°¡ 1°³ÀÏ¶§, ¸¶Áö¸· ºñ¹Ð¹øÈ£ÀÇ ÀÎÁ¢ Å° ¿©ºÎ¸¦ °Ë»çÇÑ´Ù. 
+			
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ð¹ï¿½È£ï¿½ï¿½ 1ï¿½ï¿½ï¿½Ï¶ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ð¹ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å° ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½Ë»ï¿½ï¿½Ñ´ï¿½. 
 //			if(remainingCharCnt == 1){
 //				List<Integer> adjListOfLastKey = adjList[lastKeyNum];
 //				boolean isAdjLastKey = false;
@@ -135,7 +158,7 @@ public class A_0022 {
 //				}
 //			}
 			
-			// dp¿¡ ¾øÀ¸¸é Àç±Í¸¦ Åº´Ù.
+			// dpï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Í¸ï¿½ Åºï¿½ï¿½.
 //			if(dp[adjKeyNum][remainingCharCnt] == -1){
 //				dp[adjKeyNum][remainingCharCnt] = getPossiblePasswordCount(
 //						adjKeyNum,
@@ -145,15 +168,21 @@ public class A_0022 {
 //			}
 			
 //			ret += dp[adjKeyNum][remainingCharCnt];
-			ret += getPossiblePasswordCount(
-					adjKeyNum,
-					remainingCharCnt-1,
-					(adjKeyNum < 10 ? (numMinCnt -1) : numMinCnt),
-					(isUppercase ? (uppMinCnt -1) : uppMinCnt));
+			boolean isAdjKeyUppercase = adjKeyNum < 0 ? true : false;
+			if(visited[isAdjKeyUppercase ? 1 : 0][isAdjKeyUppercase ? (adjKeyNum * -1) : adjKeyNum] == 0) {
+				ret += getPossiblePasswordCount(
+						adjKeyNum,
+						remainingCharCnt-1,
+						(adjKeyNum < 10 ? (numMinCnt -1) : numMinCnt),
+						(isAdjKeyUppercase ? (uppMinCnt -1) : uppMinCnt));
+				visited[isAdjKeyUppercase ? 1 : 0][isAdjKeyUppercase ? (adjKeyNum * -1) : adjKeyNum] = 0;
+				
+			}
+			
 			
 		}
 		
-		keyCnt[keyIdx]++;
+//		keyCnt[keyIdx]++;
 		
 		return ret;
 		
