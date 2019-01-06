@@ -67,7 +67,7 @@ public class A_0022_1 {
 			
 			result = 0;
 			visited = new int[KEY_CNT];
-			result += getPossiblePasswordCount(firstKeyNum, 10, 0, 0);
+			result += getPossiblePasswordCount(firstKeyNum, 10, 0, 1);
 			
 			bw.flush();
 			bw.write("#" + testCase + " " + result + "\n");
@@ -90,7 +90,7 @@ public class A_0022_1 {
 		if(remainingCharCnt <= 1){
 			if(keyIdx == lastKeyNum) {
 				if(numCnt >= numMinCnt && charCnt >= uppCnt) {
-					int resultCombi = combination(charCnt+1, uppCnt);
+					int resultCombi = combination( charCnt, uppCnt);
 					return resultCombi;
 				}else {
 					return 0;
