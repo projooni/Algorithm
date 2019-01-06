@@ -16,17 +16,17 @@ import java.util.StringTokenizer;
 // 10/12 02:52:58
 // 10/22 02:52:48
 
-public class A_0022 {
+public class A_0022_1 {
 	
 	public static final int KEY_CNT = 36;
 	public static int firstKeyNum;
 	public static int lastKeyNum;
 	public static List<Integer> adjList[];
-	public static int keyCnt[];
-	public static int dp[][];
 	public static int result;
-	public static int password[];
-	public static int visited[][];
+	public static int visited[];
+	public static int numMinCnt;
+	public static int uppCnt;
+	public static int passwordLength;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
@@ -53,28 +53,21 @@ public class A_0022 {
 			
 			firstKeyNum = (day + second) % 36;
 			lastKeyNum = (month + hour + minute) % 36;
-			int numMinCnt = minute / 10;
-			int uppMinCnt = second / 10;
+			numMinCnt = minute / 10;
+			uppCnt = second / 10;
+			
+			passwordLength = 10;
 			
 			adjList = new ArrayList[KEY_CNT];
 			makeAdjList();
-			
-			keyCnt = new int[KEY_CNT];
-			Arrays.fill(keyCnt, 2);
 			
 			if(firstKeyNum >= 0 && firstKeyNum < 10) {
 				numMinCnt--;
 			}
 			
 			result = 0;
-			visited = new int[2][KEY_CNT];
-			result += getPossiblePasswordCount(firstKeyNum, 10, numMinCnt, uppMinCnt);
-			
-			if(firstKeyNum >= 10) {
-				uppMinCnt--;
-				visited = new int[2][KEY_CNT];
-				result += getPossiblePasswordCount((firstKeyNum*-1), 10, numMinCnt, uppMinCnt);
-			}
+			visited = new int[KEY_CNT];
+			result += getPossiblePasswordCount(firstKeyNum, 10, 0, 0);
 			
 			bw.flush();
 			bw.write("#" + testCase + " " + result + "\n");
@@ -84,20 +77,21 @@ public class A_0022 {
 
 	}
 	
-	public static int getPossiblePasswordCount(int keyIdx, int remainingCharCnt, int numMinCnt, int uppMinCnt){
+	public static int combination(int n, int r) {
+		if(n == r || r == 0) return 1; 
+		else return combination(n - 1, r - 1) + combination(n - 1, r); 
+	}
+	
+	public static int getPossiblePasswordCount(int keyIdx, int remainingCharCnt, int numCnt, int charCnt){
 		
-		boolean isUppercase = keyIdx < 0 ? true : false;
-		if(isUppercase) {
-			keyIdx *= -1;
-		}
-		
-		visited[isUppercase ? 1 : 0][keyIdx]++;
+		visited[keyIdx]++;
 		
 		// 남은 자릿수가 0이고, 마지막 키에 도달했으며, 최소 숫자 카운트를 달성하고, 대문자 카운트를 달성한경우
 		if(remainingCharCnt <= 1){
 			if(keyIdx == lastKeyNum) {
-				if(numMinCnt <= 0 && uppMinCnt == 0) {
-					return 1;
+				if(numCnt >= numMinCnt && charCnt >= uppCnt) {
+					int resultCombi = combination(charCnt+1, uppCnt);
+					return resultCombi;
 				}else {
 					return 0;
 				}
@@ -106,11 +100,11 @@ public class A_0022 {
 			}
 		}
 		
-		if(uppMinCnt < 0) {
+		if(uppCnt > (passwordLength - numCnt)) {
 			return 0;
 		}
 		
-		if(numMinCnt > remainingCharCnt) {
+		if(numMinCnt > (passwordLength - charCnt)) {
 			return 0;
 		}
 		
@@ -121,20 +115,17 @@ public class A_0022 {
 		for(int idx=0; idx<adjListOfCurrKey.size(); idx++){
 			
 			int adjKeyNum = adjListOfCurrKey.get(idx);
+			boolean isNum = adjKeyNum < 10 ? true : false;
 
-			boolean isAdjKeyUppercase = adjKeyNum < 0 ? true : false;
-			if(isAdjKeyUppercase) {
-				adjKeyNum *= -1;
-			}
-			if(visited[isAdjKeyUppercase ? 1 : 0][adjKeyNum] == 0) {
+			if(visited[adjKeyNum] == 0) {
 					
 				ret += getPossiblePasswordCount(
-						isAdjKeyUppercase ? adjKeyNum*-1 : adjKeyNum,
+						adjKeyNum,
 						remainingCharCnt-1,
-						(adjKeyNum >= 0 && adjKeyNum < 10 ? (numMinCnt -1) : numMinCnt),
-						(isAdjKeyUppercase ? (uppMinCnt -1) : uppMinCnt));
+						(isNum ? (numCnt+1) : numCnt),
+						(isNum ? charCnt : (charCnt+1)));
 				
-				visited[isAdjKeyUppercase ? 1 : 0][adjKeyNum] = 0;
+				visited[adjKeyNum] = 0;
 				
 			}
 			
@@ -164,11 +155,9 @@ public class A_0022 {
 				
 				if(isInKeyboardExcLine(i+9, lineType, false)){
 					adjList[i].add(i+9);
-					adjList[i].add((i+9)*-1);
 				}
 				if(isInKeyboardExcLine(i+10, lineType, false)){
 					adjList[i].add(i+10);
-					adjList[i].add((i+10)*-1);
 				}
 				
 			}else if(i >= 10 && i < 20){
@@ -182,57 +171,43 @@ public class A_0022 {
 				
 				if(isInKeyboardExcLine(i+9, lineType, false)){
 					adjList[i].add(i+9);
-					adjList[i].add((i+9)*-1);
 				}
 				if(isInKeyboardExcLine(i+10, lineType, false)){
 					adjList[i].add(i+10);
-					adjList[i].add((i+10)*-1);
 				}
 				
 			}else if(i >= 20 && i < 29){
 				
 				if(isInKeyboardExcLine(i-10, lineType, false)){
 					adjList[i].add(i-10);
-					adjList[i].add((i-10)*-1);
 				}
 				if(isInKeyboardExcLine(i-9, lineType, false)){
 					adjList[i].add(i-9);
-					adjList[i].add((i-9)*-1);
 				}
 				
 				if(isInKeyboardExcLine(i+8, lineType, false)){
 					adjList[i].add(i+8);
-					adjList[i].add((i+8)*-1);
 				}
 				if(isInKeyboardExcLine(i+9, lineType, false)){
 					adjList[i].add(i+9);
-					adjList[i].add((i+9)*-1);
 				}
 				
 			}else{ // keyIdx >= 29
 				
 				if(isInKeyboardExcLine(i-9, lineType, false)){
 					adjList[i].add(i-9);
-					adjList[i].add((i-9)*-1);
 				}
 				if(isInKeyboardExcLine(i-8, lineType, false)){
 					adjList[i].add(i-8);
-					adjList[i].add((i-8)*-1);
 				}
 				
 			}
 			
 			if(isInKeyboardExcLine(i-1, lineType, true)){
 				adjList[i].add(i-1);
-				if(i >= 10) {
-					adjList[i].add((i-1)*-1);
-				}
 			}
 			if(isInKeyboardExcLine(i+1, lineType, true)){
 				adjList[i].add(i+1);
-				if(i >= 10) {
-					adjList[i].add((i+1)*-1);
-				}
 			}
 			
 		}
