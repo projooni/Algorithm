@@ -27,7 +27,6 @@ public class A_0022_1 {
 	public static int uppCnt;
 	public static int passwordLength;
 	public static int uppFirstChar;
-	public static int isFirstNum;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
@@ -62,18 +61,16 @@ public class A_0022_1 {
 			adjList = new ArrayList[KEY_CNT];
 			makeAdjList();
 			
-			uppFirstChar = 0;
-			isFirstNum = 0;
+			boolean isFirstKeyNum = true;
 			if(firstKeyNum >= 0 && firstKeyNum < 10) {
-				isFirstNum++;
 				numMinCnt--;
 			}else {
-				uppFirstChar++;
+				isFirstKeyNum = false;
 			}
 			
 			result = 0;
 			visited = new int[KEY_CNT];
-			result += getPossiblePasswordCount(firstKeyNum, 10, isFirstNum, uppFirstChar, 0);
+			result += getPossiblePasswordCount(firstKeyNum, 10, isFirstKeyNum ? 1 : 0, !isFirstKeyNum ? 1 : 0, 0);
 			
 			bw.flush();
 			bw.write("#" + testCase + " " + result + "\n");
@@ -86,50 +83,36 @@ public class A_0022_1 {
 	public static int combination(int n, int r) {
 		if(n == r || r == 0) return 1; 
 		else return combination(n - 1, r - 1) + combination(n - 1, r); 
-		
-//		int cnt = 0;
-//		
-//		if(n == r || r == 0) {
-//			return 1;
-//		}else {
-//			for(int i=0; i<n; i++) {
-//				for(int j=i+1; j<r; j++) {
-//					cnt++;
-//				}
-//			}			
-//		}
-//		
-//		return cnt;
 	}
 	
 	public static long getPossiblePasswordCount(int keyIdx, int remainingCharCnt, int numCnt, int charCnt, int dupCnt){
 		
 		visited[keyIdx]++;
 		
+		if(uppCnt > (passwordLength - numCnt)) {
+			return 0;
+		}
+		
+		if(numMinCnt > (passwordLength - charCnt)) {
+			return 0;
+		}
+		
 		if(remainingCharCnt <= 1){
-//			visited[keyIdx]--;
+			
 			if(keyIdx == lastKeyNum) {
+				
 				if(numCnt >= numMinCnt && charCnt >= uppCnt) {
-					int resultCombi = combination( charCnt-dupCnt, uppCnt-dupCnt);
+					int resultCombi = combination( charCnt-(dupCnt*2), uppCnt-dupCnt);
 					int dupCharCombi = (int) Math.pow(2, dupCnt);
 					return dupCharCombi*resultCombi;
 				}else {
 					return 0;
 				}
+				
 			}else {
 				return 0;
 			}
 			
-		}
-		
-		if(uppCnt > (passwordLength - numCnt)) {
-//			visited[keyIdx]--;
-			return 0;
-		}
-		
-		if(numMinCnt > (passwordLength - charCnt)) {
-//			visited[keyIdx]--;
-			return 0;
 		}
 		
 		long ret = 0;
@@ -148,15 +131,14 @@ public class A_0022_1 {
 						remainingCharCnt-1,
 						(isNum ? (numCnt+1) : numCnt),
 						(isNum ? charCnt : (charCnt+1)),
-						visited[adjKeyNum]>=1 ? dupCnt+1 : dupCnt);
+						visited[adjKeyNum]==1 ? dupCnt+1 : dupCnt);
 				
-				visited[adjKeyNum] = 0;
+				visited[adjKeyNum] --;
 				
 			}
 			
 		}
 		
-//		visited[keyIdx]--;
 		return ret;
 		
 	}
