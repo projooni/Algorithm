@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -22,16 +21,18 @@ public class A_0022_1 {
 	public static int firstKeyNum;
 	public static int lastKeyNum;
 	public static List<Integer> adjList[];
-	public static int result;
+	public static long result;
 	public static int visited[];
 	public static int numMinCnt;
 	public static int uppCnt;
 	public static int passwordLength;
+	public static int uppFirstChar;
+	public static int isFirstNum;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
 		
-		System.setIn(new FileInputStream("C://eclipse-workspace/sample_input.txt"));
+		System.setIn(new FileInputStream("D://sample_input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
@@ -61,13 +62,18 @@ public class A_0022_1 {
 			adjList = new ArrayList[KEY_CNT];
 			makeAdjList();
 			
+			uppFirstChar = 0;
+			isFirstNum = 0;
 			if(firstKeyNum >= 0 && firstKeyNum < 10) {
+				isFirstNum++;
 				numMinCnt--;
+			}else {
+				uppFirstChar++;
 			}
 			
 			result = 0;
 			visited = new int[KEY_CNT];
-			result += getPossiblePasswordCount(firstKeyNum, 10, 0, 1);
+			result += getPossiblePasswordCount(firstKeyNum, 10, isFirstNum, uppFirstChar, 0);
 			
 			bw.flush();
 			bw.write("#" + testCase + " " + result + "\n");
@@ -80,35 +86,53 @@ public class A_0022_1 {
 	public static int combination(int n, int r) {
 		if(n == r || r == 0) return 1; 
 		else return combination(n - 1, r - 1) + combination(n - 1, r); 
+		
+//		int cnt = 0;
+//		
+//		if(n == r || r == 0) {
+//			return 1;
+//		}else {
+//			for(int i=0; i<n; i++) {
+//				for(int j=i+1; j<r; j++) {
+//					cnt++;
+//				}
+//			}			
+//		}
+//		
+//		return cnt;
 	}
 	
-	public static int getPossiblePasswordCount(int keyIdx, int remainingCharCnt, int numCnt, int charCnt){
+	public static long getPossiblePasswordCount(int keyIdx, int remainingCharCnt, int numCnt, int charCnt, int dupCnt){
 		
 		visited[keyIdx]++;
 		
-		// 남은 자릿수가 0이고, 마지막 키에 도달했으며, 최소 숫자 카운트를 달성하고, 대문자 카운트를 달성한경우
 		if(remainingCharCnt <= 1){
+//			visited[keyIdx]--;
 			if(keyIdx == lastKeyNum) {
 				if(numCnt >= numMinCnt && charCnt >= uppCnt) {
-					int resultCombi = combination( charCnt, uppCnt);
-					return resultCombi;
+					int resultCombi = combination( charCnt-dupCnt, uppCnt-dupCnt);
+					int dupCharCombi = (int) Math.pow(2, dupCnt);
+					return dupCharCombi*resultCombi;
 				}else {
 					return 0;
 				}
 			}else {
 				return 0;
 			}
+			
 		}
 		
 		if(uppCnt > (passwordLength - numCnt)) {
+//			visited[keyIdx]--;
 			return 0;
 		}
 		
 		if(numMinCnt > (passwordLength - charCnt)) {
+//			visited[keyIdx]--;
 			return 0;
 		}
 		
-		int ret = 0;
+		long ret = 0;
 		
 		List<Integer> adjListOfCurrKey = adjList[keyIdx];
 		
@@ -117,13 +141,14 @@ public class A_0022_1 {
 			int adjKeyNum = adjListOfCurrKey.get(idx);
 			boolean isNum = adjKeyNum < 10 ? true : false;
 
-			if(visited[adjKeyNum] == 0) {
+			if((isNum &&visited[adjKeyNum] == 0) || (!isNum && visited[adjKeyNum] <= 1)) {
 					
 				ret += getPossiblePasswordCount(
 						adjKeyNum,
 						remainingCharCnt-1,
 						(isNum ? (numCnt+1) : numCnt),
-						(isNum ? charCnt : (charCnt+1)));
+						(isNum ? charCnt : (charCnt+1)),
+						visited[adjKeyNum]>=1 ? dupCnt+1 : dupCnt);
 				
 				visited[adjKeyNum] = 0;
 				
@@ -131,6 +156,7 @@ public class A_0022_1 {
 			
 		}
 		
+//		visited[keyIdx]--;
 		return ret;
 		
 	}
