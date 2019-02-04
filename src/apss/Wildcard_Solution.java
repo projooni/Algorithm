@@ -32,13 +32,6 @@ public class Wildcard_Solution {
 			W = br.readLine().trim();
 			N = Integer.parseInt(br.readLine().trim());
 			
-			cache = new int[101][101];
-			for(int i=0; i<101; i++) {
-				for(int j=0; j<101; j++) {
-					cache[i][j] = -1;
-				}
-			}
-			
 			result = new ArrayList<String>();
 			
 			fileName = new String[N];
@@ -46,11 +39,17 @@ public class Wildcard_Solution {
 				fileName[i] = br.readLine().trim();
 				S = fileName[i];
 				
+				cache = new int[101][101];
+				for(int k=0; k<101; k++) {
+					for(int j=0; j<101; j++) {
+						cache[k][j] = -1;
+					}
+				}
+				
 				bw.flush();
 				
 				if(dynamicMatch(0,0) == 1) {
 					result.add(fileName[i]);
-					
 				}
 				
 			}
@@ -95,6 +94,7 @@ public class Wildcard_Solution {
 		return false;
 	}
 	
+	// O(n^3) : 패턴길이 n, 문자열길이 n, 재귀호출 n
 	public static int dynamicMatch(int w, int s) {
 		// -1은 아직 답이 계산되지 않았음을 의미한다.
 		// 1은 해당 입력들이 서로 대응됨을 의미한다.
@@ -113,20 +113,52 @@ public class Wildcard_Solution {
 		// 더이상 대응할 수 없으면 왜 while문이 끝났는지 확인한다
 		// 2. 패턴 끝에 도달해서 끝난 경우: 문자열도 끝났어야 참
 		if(w == W.length()) {
-			return ret = (s == S.length() ? 1 : 0);
+			return cache[w][s] = (s == S.length() ? 1 : 0);
 		}
 		
 		// 4. *를 만나서 끝난 경우: *에 몇 글자를 대응해야 할지 재귀 호출하면서 확인한다.
 		if(W.charAt(w) == '*') {
-			for(int skip=0; skip+s <= S.length(); skip++) {
+			for(int skip=0; skip+s <= S.length(); ++skip) {
 				if(dynamicMatch(w+1, s+skip) == 1) {
-					return ret = 1;
+					return cache[w][s] = 1;
 				}
 			}
 		}
 		
 		// 3. 이 외의 경우에는 모두 대응되지 않는다.
-		return ret = 0;
+		return cache[w][s] = 0;
+		
+	}
+	
+	public static int dynamicMatch2(int w, int s) {
+		// -1은 아직 답이 계산되지 않았음을 의미한다.
+		// 1은 해당 입력들이 서로 대응됨을 의미한다.
+		// 0은 해당 입력들이 서로 대응되지 않음을 의미한다.
+		int ret = cache[w][s];
+		if(ret != -1) {
+			return cache[w][s];
+		}
+		
+		// W[w]와 S[s]를 맞춰나간다.
+		while(w<W.length() && s<S.length() && (W.charAt(w) == '?' || W.charAt(w) == S.charAt(s))) {
+			return cache[w][s] = dynamicMatch2(w+1,s+1);
+		}
+		
+		// 더이상 대응할 수 없으면 왜 while문이 끝났는지 확인한다
+		// 2. 패턴 끝에 도달해서 끝난 경우: 문자열도 끝났어야 참
+		if(w == W.length()) {
+			return cache[w][s] = (s == S.length() ? 1 : 0);
+		}
+		
+		// 4. *를 만나서 끝난 경우: *에 몇 글자를 대응해야 할지 재귀 호출하면서 확인한다.
+		if(W.charAt(w) == '*') {
+			if(dynamicMatch2(w+1,s) == 1 || (s < S.length() && dynamicMatch2(w, s+1) == 1)) {
+				return cache[w][s] = 1;
+			}
+		}
+		
+		// 3. 이 외의 경우에는 모두 대응되지 않는다.
+		return cache[w][s] = 0;
 		
 	}
 
