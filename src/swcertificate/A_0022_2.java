@@ -66,15 +66,11 @@ public class A_0022_2 {
 				}
 			}
 			
+			// 인접리스트. 각 키에 인접한 키 리스트.
 			adjList = new ArrayList[KEY_CNT];
 			makeAdjList();
 			
-			boolean isFirstKeyNum = true;
-			if(firstKeyNum >= 0 && firstKeyNum < 10) {
-//				numMinCnt--;
-			}else {
-				isFirstKeyNum = false;
-			}
+			boolean isFirstKeyNum = firstKeyNum > 10 ? false : true;
 			
 			result = 0;
 			visited = new int[KEY_CNT];
@@ -88,6 +84,7 @@ public class A_0022_2 {
 
 	}
 	
+	// 조합 DP
 	public static int combination(int n, int r) {
 		if(n == r || r == 0) return 1; 
 		if(combiCache[n][r] != -1) {
@@ -120,6 +117,11 @@ public class A_0022_2 {
 					if((charCnt-(dupCnt*2)) < (uppCnt-dupCnt)) {
 						return 0;
 					}
+					
+					/*
+					 * 중복된 키는 무조건 대문자가 들어갈 것이므로, 제외하고 나머지들 중에서 대문자를 뽑기하는 경우의 수(조합)를 구한다. -> resultCombi
+					 * 중복된 키는 대문자/소문자 두가지의 경우가 있으므로 2를 중복수만큼 곱해줘야 한다. -> dupCharCombi
+					 * */
 					int resultCombi = combination( charCnt-(dupCnt*2), uppCnt-dupCnt);
 					int dupCharCombi = (int) Math.pow(2, dupCnt);
 					return dupCharCombi*resultCombi;
