@@ -1,6 +1,6 @@
 package skeleton;
 // DFS.java  
-// 시간복잡도 : O(V+E)
+// �ð����⵵ : O(V+E)
 
 import java.util.ArrayList;  
 
@@ -21,7 +21,6 @@ public class Dfs {
 	
 	static void dfsAll(){
 		
-		// component�� �������� ��츦 ���� ��� ��带 ���ư��鼭 dfs�� �����Ѵ�
 		for(int i=0; i<AdjList.length; i++){
 			dfs(i);
 		}
