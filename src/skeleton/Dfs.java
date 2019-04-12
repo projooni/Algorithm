@@ -1,6 +1,6 @@
 package skeleton;
 // DFS.java  
-// ½Ã°£º¹Àâµµ : O(V+E)
+// ï¿½Ã°ï¿½ï¿½ï¿½ï¿½âµµ : O(V+E)
 
 import java.util.ArrayList;  
 
@@ -9,7 +9,7 @@ public class Dfs {
 	static final int _M_size_ = 100; // max number of vertices  
 
     // adjacent list  
-    static ArrayList<Integer> AdjList[] = new ArrayList[_M_size_];  
+    static ArrayList<Integer> AdjList[] = new ArrayList[_M_size_];
 
     // check if the vertex is visited  
     static boolean visited[] = new boolean[_M_size_];  

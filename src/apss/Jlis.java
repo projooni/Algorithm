@@ -8,12 +8,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
-/*
- * ¾Ë°í¸®Áò ¹®Á¦ÇØ°áÀü·« Á¤´ä¼Ò½º C++ -> JAVA
+/* -- ì¸ì½”ë”© í…ŒìŠ¤
+ * ì•Œê³ ë¦¬ì¦˜ ë¬¸ì œí•´ê²°ì „ëµ ì •ë‹µì†ŒìŠ¤ C++ -> JAVA
  * 
- * Ç®±äÇ®¾ú´Âµ¥, ÀÌÇØ°¡ Àß ¾È°¨.
- * -1ºÎÅÍ ÇÏ´Â°Íµµ ÀÌÇØ°¡ ¾È°¡°í, JLIS(i, j)·Î 2ÁßÆ÷¹®À» µ¹¸é¼­ 0ºÎÅÍ °è»êÇÏ¸é ´äÀÌ ¾È³ª¿À´Â°Ô ÀÌÇØ°¡ ¾ÈµÊ...
- * ÀÌ°Å¸¸ ºÙµé°í ÀÖÀ»¼ø ¾øÀ¸´Ï ÀÏ´Ü ÆĞ½º.
+ * í’€ê¸´í’€ì—ˆëŠ”ë°, ì´í•´ê°€ ì˜ ì•ˆê°.
+ * -1ë¶€í„° í•˜ëŠ”ê²ƒë„ ì´í•´ê°€ ì•ˆê°€ê³ , JLIS(i, j)ë¡œ 2ì¤‘í¬ë¬¸ì„ ëŒë©´ì„œ 0ë¶€í„° ê³„ì‚°í•˜ë©´ ë‹µì´ ì•ˆë‚˜ì˜¤ëŠ”ê²Œ ì´í•´ê°€ ì•ˆë¨...
+ * ì´ê±°ë§Œ ë¶™ë“¤ê³  ìˆì„ìˆœ ì—†ìœ¼ë‹ˆ ì¼ë‹¨ íŒ¨ìŠ¤.
  * */
 public class Jlis {
 	
@@ -25,7 +25,7 @@ public class Jlis {
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
 		
-		System.setIn(new FileInputStream("D:\\sample_input.txt"));
+		System.setIn(new FileInputStream("/Users/projooni/sample_input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
@@ -41,7 +41,7 @@ public class Jlis {
 			arrM = new int[M];
 			cache = new int[N+1][M+1];
 			
-			// dp ÃÊ±âÈ­
+			// dp ï¿½Ê±ï¿½È­
 			for(int i=0; i<=N; i++) {
 				for(int j=0; j<=M; j++) {
 					cache[i][j] = -1;
@@ -71,18 +71,18 @@ public class Jlis {
 	}
 	
 	public static int JLIS(int indexN, int indexM) {
-		// ¸Ş¸ğÀÌÁ¦ÀÌ¼Ç
+		// ï¿½Ş¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½
 		if(cache[indexN+1][indexM+1] != -1) {
 			return cache[indexN+1][indexM+1];
 		}
 		
-		// A[indexA], B[indexB]°¡ ÀÌ¹Ì Á¸ÀçÇÏ¹Ç·Î 2°³´Â Ç×»ó ÀÖ´Ù.
+		// A[indexA], B[indexB]ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¹Ç·ï¿½ 2ï¿½ï¿½ï¿½ï¿½ ï¿½×»ï¿½ ï¿½Ö´ï¿½.
 		int ret = 2;
 		long a = indexN == -1 ? Long.MIN_VALUE : arrN[indexN];
 		long b = indexM == -1 ? Long.MIN_VALUE : arrM[indexM];
 		long maxElement = Math.max(a, b);
 		
-		// ´ÙÀ½ ¿ø¼Ò¸¦ Ã£´Â´Ù.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ò¸ï¿½ Ã£ï¿½Â´ï¿½.
 		for(int nextN = indexN+1; nextN < N; nextN++) {
 			if(maxElement < arrN[nextN]) {
 				ret = Math.max(ret, JLIS(nextN, indexM) + 1);
