@@ -12,7 +12,7 @@ import java.io.OutputStreamWriter;
  *PI(원주율 외우기) 알고리즘 문제해결전략 풀이
  * */
 
-public class Pi_Apps_Solution {
+public class Pi_Apss_Solution {
 
 	public static String str;
 	public static int dp[];
@@ -21,7 +21,7 @@ public class Pi_Apps_Solution {
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
 
-		System.setIn(new FileInputStream("/Users/projooni/sample_input.txt"));
+		System.setIn(new FileInputStream("D://sample_input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
@@ -39,7 +39,7 @@ public class Pi_Apps_Solution {
 			int result = memorize(0);
 
 			bw.flush();
-			bw.write(testCase + " " + result + "\n");
+			bw.write(result + "\n");
 		}
 
 		bw.close();
@@ -48,25 +48,26 @@ public class Pi_Apps_Solution {
 	public static int classify(int a, int b) {
 		
 		// 숫자 조각을 가져온다.
-		String M = str.substring(a, b-a+1);
+		String M = str.substring(a, b+1);
 		// 첫 글자만으로 이루어진 문자열과 같으면 난이도는 1
 		String pat1 = "";
 		for(int i=0; i<M.length(); i++) {
 			pat1 += M.charAt(0);
 		}
-		if(M == pat1){
+		if(pat1.equals(M)){
 			return 1;
 		}
 		// 등차수열인지 검사한다.
 		boolean progressive = true;
 		for(int i=0; i<M.length()-1; i++) {
-			if(M.charAt(i+1) - M.charAt(i) != M.charAt(i) - M.charAt(0)) {
+			if(M.charAt(i+1) - M.charAt(i) != M.charAt(1) - M.charAt(0)) {
 				progressive = false;
+				break;
 			}
 		}
 		
 		// 등차수열이고 공차가 1 혹은 -1이면 난이도는 2
-		if(progressive && Math.abs((int)M.charAt(1) - (int)M.charAt(0)) == 1) {
+		if(progressive && Math.abs(M.charAt(1) - (int)M.charAt(0)) == 1) {
 			return 2;
 		}
 
@@ -75,6 +76,7 @@ public class Pi_Apps_Solution {
 		for(int i=0; i<M.length(); i++) {
 			if(M.charAt(i) != M.charAt(i%2)) {
 				alternating = false;
+				break;
 			}
 		}
 		
@@ -105,9 +107,8 @@ public class Pi_Apps_Solution {
 			}
 		}
 		
+		dp[begin] = ret;
 		return ret;
-		
-		
 		
 	}
 

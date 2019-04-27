@@ -16,7 +16,7 @@ public class Pi {
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
 
-		System.setIn(new FileInputStream("/Users/projooni/sample_input.txt"));
+		System.setIn(new FileInputStream("D:///sample_input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
