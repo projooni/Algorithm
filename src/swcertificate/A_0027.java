@@ -14,8 +14,8 @@ import java.util.StringTokenizer;
 public class A_0027 {
 	
 	public static int N, L, H;
-	public static int[][] drone;
-	public static List<int[]> _4, _3, _2, _1;
+	public static double[][] drone;
+	public static List<double[]> _4, _3, _2, _1;
 	public static int[] result;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
@@ -33,12 +33,12 @@ public class A_0027 {
 			L = Integer.parseInt(st.nextToken());
 			H = Integer.parseInt(st.nextToken());
 			
-			_4 = new ArrayList<int[]>();
-			_3 = new ArrayList<int[]>();
-			_2 = new ArrayList<int[]>();
-			_1 = new ArrayList<int[]>();
+			_4 = new ArrayList<double[]>();
+			_3 = new ArrayList<double[]>();
+			_2 = new ArrayList<double[]>();
+			_1 = new ArrayList<double[]>();
 			
-			drone = new int[N+1][3];
+			drone = new double[N+1][3];
 			result = new int[N+1];
 			
 			for(int i=1; i<N+1; i++) {
@@ -55,69 +55,60 @@ public class A_0027 {
 			int index = 1;
 			double pre  = 0;
 			boolean lastSame = false;
+			
 			for(int i=0; i<_4.size(); i++) {
-				lastSame = false;
 				double a = _4.get(i)[0] == 0  ? Double.MAX_VALUE : _4.get(i)[1] / _4.get(i)[0];
 				if(index != 1) {
 					if(pre == a) {
-						result[_4.get(i)[2]] = index-1;
 						lastSame = true;
-						continue;
+					}else {
+						lastSame = false;
 					}
 				}
 				pre = a;
-				result[_4.get(i)[2]] = index;
+				result[(int)_4.get(i)[2]] = lastSame ?  result[(int)_4.get(i-1)[2]] : index;
 				index++;
 			}
-			if(lastSame) {
-				index++;
-			}
+			
 			for(int i=0; i<_3.size(); i++) {
-				lastSame = false;
 				double a = _3.get(i)[0] == 0  ? Double.MAX_VALUE : _3.get(i)[1] / _3.get(i)[0];
 				if(index != 1) {
 					if(pre == a) {
-						result[_3.get(i)[2]] = index-1;
 						lastSame = true;
-						continue;
+					}else {
+						lastSame = false;
 					}
 				}
 				pre = a;
-				result[_3.get(i)[2]] = index;
+				result[(int)_3.get(i)[2]] = lastSame ?  result[(int)_3.get(i-1)[2]] : index;
 				index++;
 			}
-			if(lastSame) {
-				index++;
-			}
+			
 			for(int i=0; i<_2.size(); i++) {
-				lastSame = false;
 				double a = _2.get(i)[0] == 0  ? Double.MAX_VALUE : _2.get(i)[1] / _2.get(i)[0];
 				if(index != 1) {
 					if(pre == a) {
-						result[_2.get(i)[2]] = index-1;
 						lastSame = true;
-						continue;
+					}else {
+						lastSame = false;
 					}
 				}
 				pre = a;
-				result[_2.get(i)[2]] = index;
+				result[(int)_2.get(i)[2]] = lastSame ?  result[(int)_2.get(i-1)[2]] : index;
 				index++;
 			}
-			if(lastSame) {
-				index++;
-			}
+			
 			for(int i=0; i<_1.size(); i++) {
-				lastSame = false;
 				double a = _1.get(i)[0] == 0  ? Double.MAX_VALUE : _1.get(i)[1] / _1.get(i)[0];
 				if(index != 1) {
 					if(pre == a) {
-						result[_1.get(i)[2]] = index-1;
 						lastSame = true;
-						continue;
+					}else {
+						lastSame = false;
 					}
 				}
 				pre = a;
-				result[_1.get(i)[2]] = index;
+				result[(int)_1.get(i)[2]] = lastSame ?  result[(int)_1.get(i-1)[2]] : index;
 				index++;
 			}
 			
@@ -138,8 +129,8 @@ public class A_0027 {
 	public static void getDrone() {
 		
 		for(int i=1; i<drone.length; i++) {
-			int x = drone[i][0];
-			int y = drone[i][1];
+			double x = drone[i][0];
+			double y = drone[i][1];
 			
 			if(!innerCircle(x, y)) {
 				continue;
@@ -148,10 +139,10 @@ public class A_0027 {
 			if(x >= 0 && y <= 0) {
 				// 4사분면			
 				_4.add(drone[i]);				
-			}else if(x < 0 && y <= 0) {
+			}else if(x < 0 && y < 0) {
 				// 3사분면
 				_3.add(drone[i]);
-			}else if(x <= 0 && y > 0) {
+			}else if(x < 0 && y >= 0) {
 				// 2사분면
 				_2.add(drone[i]);
 			}else {
@@ -161,29 +152,43 @@ public class A_0027 {
 			
 		}
 		
-		Comparator comp = new Comparator<int[]>() {
+		Comparator comp = new Comparator<double[]>() {
 
 			@Override
-			public int compare(int[] o1, int[] o2) {
+			public int compare(double[] o1, double[] o2) {
 				// TODO Auto-generated method stub
 				double a1 = Math.abs(o1[0] == 0  ? Double.MAX_VALUE : o1[1] / o1[0]);
 				double a2 = Math.abs(o2[0] == 0  ? Double.MAX_VALUE : o2[1] / o2[0]);
-				return (int)(a1 - a2);
+		
+				return (a1 <= a2) ?  -1 : 1;
+			}
+			
+		};
+		
+		Comparator compDesc = new Comparator<double[]>() {
+
+			@Override
+			public int compare(double[] o1, double[] o2) {
+				// TODO Auto-generated method stub
+				double a1 = Math.abs(o1[0] == 0  ? Double.MAX_VALUE : o1[1] / o1[0]);
+				double a2 = Math.abs(o2[0] == 0  ? Double.MAX_VALUE : o2[1] / o2[0]);
+		
+				return (a1 <= a2) ?  1 : -1;
 			}
 			
 		};
 		
 		_4.sort(comp);
-		_3.sort(comp);
+		_3.sort(compDesc);
 		_2.sort(comp);
-		_1.sort(comp);
+		_1.sort(compDesc);
 		
 		return;
 		
 	}
 	
 	
-	public static boolean innerCircle(int x, int y) {
+	public static boolean innerCircle(double x, double y) {
 		boolean ret = false;
 		
 		int distanceDrone = (int) (Math.pow(x,  2) + Math.pow(y, 2));
