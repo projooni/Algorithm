@@ -12,13 +12,12 @@ import java.util.StringTokenizer;
 
 public class Numb3rs {
 
-	public static int N, D, P, T;
+	public static int N, D, P, T, D_COPY;
 	public static int target;
 	public static int[][] v;
 	public static int[] t;
 	public static List<Integer> vList[];
-	public static double cache[];
-	public static boolean visited[];
+	public static double cache[][];
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
@@ -35,22 +34,29 @@ public class Numb3rs {
 			D = Integer.parseInt(st.nextToken());
 			P = Integer.parseInt(st.nextToken());
 
-			cache = new double[N];
-			visited = new boolean[N];
+			cache = new double[N][101];
+			for(int i=0; i<N; i++) {
+				for(int j=0; j<101; j++) {
+					cache[i][j] = -1;
+				}
+			}
+			
 			v = new int[N][N];
 
 			vList = new ArrayList[N];
 			for (int i = 0; i < vList.length; i++) {
 				vList[i] = new ArrayList<Integer>();
-				cache[i] = -1;
 			}
 
 			for (int i = 0; i < N; i++) {
 				st = new StringTokenizer(br.readLine());
 				for (int j = 0; j < N; j++) {
 					v[i][j] = Integer.parseInt(st.nextToken());
-					vList[i].add(j);
+					if(v[i][j] == 1) {
+						vList[i].add(j);
+					}
 				}
+				
 			}
 
 			T = Integer.parseInt(br.readLine().trim());
@@ -61,10 +67,17 @@ public class Numb3rs {
 			}
 
 			bw.flush();
+			
+//			getRate(P, 0);
 			for (int i = 0; i < T; i++) {
 				target = t[i];
-				double rate = getRate(P);
-				bw.write(rate + " ");
+				for(int k=0; k<N; k++) {
+					for(int j=0; j<101; j++) {
+						cache[k][j] = -1;
+					}
+				}
+				double rate = getRate(P, 0);
+				bw.write(String.format("%.8f", rate) + " ");
 			}
 			bw.write("\n");
 
@@ -74,34 +87,30 @@ public class Numb3rs {
 	}
 
 	// vertex번 마을에서 시작해서 target 마을에도착할 확률
-	public static double getRate(int vertex) {
-
-		visited[vertex] = true;
-		double rate = 1 / vList[vertex].size();
+	public static double getRate(int here, int days) {
 		
-		if(D <= 0) {
-			return 1;
-		}
-
-		if (vertex == target) {
-			return rate;
+		if(days == D) {
+			if(target == here) {
+				return 1.0;
+			}
+			return 0.0;
 		}
 		
-		D--;
+		if (cache[here][days] > -0.5) {
+			return cache[here][days];
+		}
 
 		// 인접리스트
-		List<Integer> adjList = vList[vertex];
+		List<Integer> adjList = vList[here];
 
-		double ret = 1;
+		double ret = 0.0;
 		for (int i = 0; i < adjList.size(); i++) {
 			int next = adjList.get(i);
-			if (!visited[next]) {
-				if (cache[next] == -1) {
-					cache[next] = getRate(next);
-				}
-				ret = rate * cache[next];
-			}
+			double result = getRate(next, days+1) / adjList.size();
+			ret += result;
 		}
+		
+		cache[here][days] = ret;
 
 		return ret;
 
