@@ -62,9 +62,21 @@ public class A_0031 {
 			END = Integer.parseInt(st.nextToken());
 	
 			search(START, -1);
+		    int positive_diff = diff[END];
+		    visited = new boolean[N+1];
+		    for (int i = 0; i < N + 1; i++) {
+				diff[i] = Integer.MAX_VALUE;
+				minmax[i][0] = Integer.MAX_VALUE;
+				minmax[i][1] = Integer.MAX_VALUE;
+			}
+		    search(END, -1);
+		    int negative_diff = diff[START];
+		    
+		    int result_min = Math.min(positive_diff, negative_diff);
 	
+		    
 			bw.flush();
-			bw.write("#" + testCase + " " + diff[END] + "\n");
+			bw.write("#" + testCase + " " + result_min + "\n");
 		}
 		bw.close();
 	}
