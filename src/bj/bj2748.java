@@ -41,7 +41,7 @@ public class bj2748 {
 			for(int i=2; i<dp.length; i++) {
 				dp[i] = dp[i-1] + dp[i-2];
 			}
-			
+		
 			long result = dp[N];
 			
 			bw.flush();
