@@ -33,7 +33,7 @@ public class bj1991 {
 			
 			for(int i=1; i<=N; i++) {
 				StringTokenizer st = new StringTokenizer(br.readLine());
-				// TODO String -> char·Î º¯È¯ÇÏ´Â ´õ ÁÁÀº ¹æ¹ýÀº?
+				// TODO String -> charï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?
 				int m = st.nextToken().charAt(0);
 				int l = st.nextToken().charAt(0);
 				int r = st.nextToken().charAt(0);
