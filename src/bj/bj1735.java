@@ -39,14 +39,12 @@ public class bj1735 {
 		bw.close();
 
 	}
-
-	public static int getGCD(int a, int b) {
-		int r = a % b;
-		if (r == 0) {
-			return b;
-		} else {
-			return getGCD(b, r);
+	
+	public static int getGCD(int p, int q) {
+		if(q == 0) {
+			return p;
 		}
+		return getGCD(q, p%q);
 	}
 
 }
