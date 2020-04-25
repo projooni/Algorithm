@@ -6,11 +6,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class bj6588 {
 	
 	public static int N;
-	public static int arr[];
+	public static boolean arr[];
+	public static List<Integer> arrList = new ArrayList<Integer>();
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		// TODO Auto-generated method stub
@@ -19,56 +22,87 @@ public class bj6588 {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
-		while(N != 0) {
+		while(true){
 			N = Integer.parseInt(br.readLine());
+			if(N == 0) {
+				break;
+			}
 			
 			eratosthenes();
-			int result[] = solve();
+			String result = solve();
 			
 			bw.flush();
-			bw.write(N + " = " + result[0] + " + " + result[1]);
+			bw.write(result);
+			
 		}
+		bw.close();
 
 	}
 	
 	public static void eratosthenes() {
 		
-		arr = new int[N+1];
-		arr[0] = -1;
-		arr[1] = -1;
+		arr = new boolean[N+1];
+		arr[0] = false;
+		arr[1] = false;
 		for(int i=2; i<arr.length; i++) {
-			arr[i] = i;
+			arr[i] = true;
 		}
 		
 		for(int i=2; i<arr.length; i++) {
+			if(!arr[i]) {
+				continue;
+			}
 			for(int j=i+i; j<arr.length; j+=i) {
-				arr[j] = -1;
+				if(!arr[j]) {
+					continue;
+				}
+				arr[j] = false;
 			}
 		}
+		
+		for(int i=3; i<arr.length; i++) {
+			if(arr[i] && i%2 == 1) {
+				arrList.add(i);
+			}
+		}
+		
 		
 	}
 	
-	public static int[] solve() {
-		int ret[] = new int[2];
-		ret[0] = -1;
-		ret[1] = -1;
+	public static String solve() {
+		String ret = "Goldbach's conjecture is wrong.\n";
 		
-		for(int i=arr.length-1; i>3; i--) {
-			if(arr[i] == -1) {
-				continue;
-			}
-			for(int j=3; j<arr.length; j++) {
-				if(arr[j] == -1) {
-					continue;
-				}
-				
-				if(arr[j] + arr[i] == N) {
-					ret[0] = j;
-					ret[1] = i;
-				}
-				
+		for(int i=0; i<arrList.size(); i++) {
+			int value = arrList.get(i);
+			if(arr[N-value]) {
+				ret = N + " = " + value + " + " + (N-value) + "\n";
+				break;
 			}
 		}
+		
+		/*
+		for(int i=2; i<=N/2; i++) {
+			if((arr[i] != -1) && (arr[N-i] != -1)) {
+				ret[0] = N-i;
+				ret[1] = i;
+				break;
+			}
+		}
+		*/
+		
+//		for(int i=arrList.size()-1; i>=0; i--) {
+//			int max_value = arrList.get(i);
+//			for(int j=0; j<arrList.size(); j++) {
+//				if(i == j) {
+//					continue;
+//				}
+//				int min_value = arrList.get(j);
+//				if(min_value + max_value == N) {
+//					ret[0] = max_value;
+//					ret[1] = min_value;
+//				}
+//			}
+//		}
 		
 		return ret;
 		
