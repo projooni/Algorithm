@@ -22,6 +22,11 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
+		String bi = "10010";
+		int n = Integer.parseInt(bi,2);
+		
+		System.out.println(n);
+		
 		// dfs all
 
 	}
